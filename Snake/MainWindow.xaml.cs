@@ -23,6 +23,8 @@ public partial class MainWindow : Window
 
     private GameState _gameState;
 
+    private bool _gameRunning;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -30,9 +32,10 @@ public partial class MainWindow : Window
         _gameState = new GameState(_rows, _cols);
     }
 
-    private async void Window_Loaded(object sender, RoutedEventArgs e)
+    private async Task RunGame()
     {
         Draw();
+        Overlay.Visibility = Visibility.Hidden;
         await GameLoop();
     }
 
@@ -43,6 +46,21 @@ public partial class MainWindow : Window
             await Task.Delay(100);
             _gameState.Move();
             Draw();
+        }
+    }
+
+    private async void Window_PreviewKeydown(object sender, KeyEventArgs e)
+    {
+        if (Overlay.Visibility == Visibility.Visible)
+        {
+            e.Handled = true;
+        }
+
+        if (!_gameRunning)
+        {
+            _gameRunning = true;
+            await RunGame();
+            _gameRunning = false;
         }
     }
 
