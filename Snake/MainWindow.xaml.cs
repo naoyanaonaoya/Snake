@@ -38,6 +38,8 @@ public partial class MainWindow : Window
         await ShowCountDown();
         Overlay.Visibility = Visibility.Hidden;
         await GameLoop();
+        await ShowGameOver();
+        _gameState = new GameState(_rows, _cols);
     }
 
     private async Task GameLoop()
@@ -137,5 +139,12 @@ public partial class MainWindow : Window
             OverlayText.Text = i.ToString();
             await Task.Delay(500);
         }
+    }
+
+    private async Task ShowGameOver()
+    {
+        await Task.Delay(500);
+        Overlay.Visibility = Visibility.Visible;
+        OverlayText.Text = "PRESS ANY KEY TO START";
     }
 }
