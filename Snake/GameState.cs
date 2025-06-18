@@ -14,6 +14,8 @@
 
         public bool GameOver { get; private set; }
 
+        public readonly LinkedList<Direction> _dirChanges = new();
+          
         private readonly LinkedList<Position> snakePositions = new();
 
         private readonly Random random = new();
@@ -95,9 +97,33 @@
             snakePositions.RemoveLast();
         }
 
+        private Direction GetLastDirection()
+        {
+            if (_dirChanges.Count == 0)
+            {
+                return Dir;
+            }
+
+            return _dirChanges.Last.Value;
+        }
+
+        private bool CanChangeDirection(Direction newDir)
+        {
+            if (_dirChanges.Count == 2)
+            {
+                return false;
+            }
+
+            Direction lastDir = GetLastDirection();
+            return newDir != lastDir && newDir != lastDir.Opposite();
+        }
+
         public void ChangeDirection(Direction dir)
         {
-            Dir = dir;
+            if (CanChangeDirection(dir))
+            {
+                _dirChanges.AddLast(dir);
+            }
         }
 
         private bool OutsideGrid(Position pos)
@@ -122,6 +148,12 @@
 
         public void Move()
         {
+            if (_dirChanges.Count > 0)
+            {
+                Dir = _dirChanges.First.Value;
+                _dirChanges.RemoveFirst();
+            }
+
             Position newHeadPos = HeadPosition().Translate(Dir);
             GridValue hit = WillHit(newHeadPos);
 
