@@ -35,6 +35,7 @@ public partial class MainWindow : Window
     private async Task RunGame()
     {
         Draw();
+        await ShowCountDown();
         Overlay.Visibility = Visibility.Hidden;
         await GameLoop();
     }
@@ -126,6 +127,15 @@ public partial class MainWindow : Window
                 GridValue gridValue = _gameState.Grid[row, col];
                 gridImages[row, col].Source = gridValueToImage[gridValue];
             }
+        }
+    }
+
+    private async Task ShowCountDown()
+    {
+        for (int i = 3; i >= 1; i--)
+        {
+            OverlayText.Text = i.ToString();
+            await Task.Delay(500);
         }
     }
 }
