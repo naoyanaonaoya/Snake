@@ -152,6 +152,20 @@ private readonly int _rows = 15, _cols = 15;
         int rotation = _dirToRotation[_gameState.Dir];
         headImage.RenderTransform = new RotateTransform(rotation);
     }
+
+    private async Task DrawDeadSnake()
+    {
+        List<Position> snakePosistions = new List<Position>(_gameState.SnakePositions());
+
+        for (int i = 0; i < snakePosistions.Count; i++)
+        {
+            Position pos = snakePosistions[i];
+            ImageSource imageSource = (i == 0) ? Images.DeadHead : Images.DeadBody;
+            gridImages[pos.Row, pos.Col].Source = imageSource;
+            await Task.Delay(50);
+        }
+    }
+
     private async Task ShowCountDown()
     {
         for (int i = 3; i >= 1; i--)
@@ -163,7 +177,8 @@ private readonly int _rows = 15, _cols = 15;
 
     private async Task ShowGameOver()
     {
-        await Task.Delay(500);
+        await DrawDeadSnake();
+        await Task.Delay(50);
         Overlay.Visibility = Visibility.Visible;
         OverlayText.Text = "PRESS ANY KEY TO START";
     }
