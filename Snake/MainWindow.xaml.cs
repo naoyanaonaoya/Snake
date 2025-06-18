@@ -17,7 +17,15 @@ public partial class MainWindow : Window
         {GridValue.Food, Images.Food }
     };
 
-    private readonly int _rows = 15, _cols = 15;
+    private readonly Dictionary<Direction, int> _dirToRotation = new()
+    {
+        { Direction.Up, 0 },
+        { Direction.Right, 90 },
+        { Direction.Down, 180 },
+        { Direction.Left, 270 }
+    };
+
+private readonly int _rows = 15, _cols = 15;
 
     private readonly Image[,] gridImages;
 
@@ -103,7 +111,8 @@ public partial class MainWindow : Window
             {
                 Image image = new Image
                 {
-                    Source = Images.Empty
+                    Source = Images.Empty,
+                    RenderTransformOrigin = new Point(0.5, 0.5)
                 };
 
                 images[row, col] = image;
@@ -117,6 +126,7 @@ public partial class MainWindow : Window
     private void Draw()
     {
         DrawGrid();
+        DrawSnakeHead();
         ScoreText.Text = $"SCORE {_gameState.Score}";
     }
 
@@ -128,10 +138,20 @@ public partial class MainWindow : Window
             {
                 GridValue gridValue = _gameState.Grid[row, col];
                 gridImages[row, col].Source = gridValueToImage[gridValue];
+                gridImages[row, col].RenderTransform = Transform.Identity;
             }
         }
     }
 
+    private void DrawSnakeHead()
+    {
+        Position headPos = _gameState.HeadPosition();
+        Image headImage = gridImages[headPos.Row, headPos.Col];
+        headImage.Source = Images.Head;
+
+        int rotation = _dirToRotation[_gameState.Dir];
+        headImage.RenderTransform = new RotateTransform(rotation);
+    }
     private async Task ShowCountDown()
     {
         for (int i = 3; i >= 1; i--)
